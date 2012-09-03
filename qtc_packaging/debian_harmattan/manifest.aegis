@@ -1,0 +1,14 @@
+<aegis>
+<provide>
+<credential name="encrypt">
+<docstring>
+</docstring>
+</credential>
+</provide>
+<request>
+<credential name="encrypt" />
+<for path="/opt/servermonitor/bin/servermonitor" id="servermonitor" />
+<for path="/opt/servermonitor/bin/servermonitor" />
+<for path="applauncherd-launcher::/usr/bin/applauncherd.bin" id="" />
+</request>
+</aegis>
