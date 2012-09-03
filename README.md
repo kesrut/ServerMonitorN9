@@ -1,13 +1,14 @@
 # ServerMonitorN9
 
 ServerMonitor is an application for your Linux server or workstation monitoring. It uses SSH protocol to connect to remote Linux machines. Shows uptime, load averages, memory status. Automatic information retrieval after 2 minutes. This app is designed for Nokia N9 (Harmattan)
+
 ![screen1](https://raw.github.com/kesrut/kesrut.github.com/master/screen1.png)
 
 # License
 
 The source for ServerMonitorN9 is released under the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-License for libssh2:
+`License for libssh2:
 
 /* Copyright (c) 2004-2007 Sara Golemon <sarag@libssh2.org>
  * Copyright (c) 2005,2006 Mikhail Gusarov <dottedmag@dottedmag.net>
@@ -49,6 +50,4 @@ License for libssh2:
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
  * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
- */
-
-
+ */`
