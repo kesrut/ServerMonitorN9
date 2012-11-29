@@ -33,13 +33,17 @@ protected:
 public:
     updatethread();
     updatethread(QObject *parent) ;
-    void setHosts(QList<Host*> &h) ;
+    void setHosts(QList<Host*> *h) ;
     void setServerIndex(int i) ;
     QString execute(QString cmd) ;
+    void end()
+    {
+        this->exit();
+    }
 signals:
     void update() ;
 private:
-    QList <Host*> hosts;
+    QList <Host*> *hosts;
     int index ;
     QTcpSocket *socket ;
     int sock ;

@@ -3,20 +3,26 @@
 void UpdateElement::start(Host *host)
 {
     h = host ;
-    updatethread *thread = new updatethread(this) ;
+    thread  = new updatethread(this) ;
     thread->setHosts(hosts);
     thread->setServerIndex(index) ;
     thread->start();
     QTimer *timer = host->getTimer() ;
+    //if (timer != NULL) timer->stop(); delete timer ;
     timer = new QTimer() ;
-    host->setTimer(timer);
+    h->setTimer(timer);
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update_timer())) ;
-    timer->start(120000);
+    timer->start(50000);
+}
+
+void UpdateElement::stopThread()
+{
+    thread->end();
 }
 
 void UpdateElement::update_timer()
 {
-    updatethread *thread = new updatethread() ;
+    thread = new updatethread(this) ;
     h->setThread(thread);
     thread->setHosts(hosts);
     thread->setServerIndex(index) ;

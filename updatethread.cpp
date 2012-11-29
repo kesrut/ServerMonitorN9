@@ -34,8 +34,7 @@ static void kbd_callback(const char *name, int name_len,
 
 void updatethread::run()
 {
-
-    Host *host = hosts.at(index) ;
+    Host *host = hosts->at(index) ;
     qint16 port = host->port() ;
     socket = new QTcpSocket() ;
     socket->connectToHost(host->hostname(), port);
@@ -245,7 +244,7 @@ void updatethread::run()
     }
 }
 
-void updatethread::setHosts(QList<Host*> &h)
+void updatethread::setHosts(QList<Host*> *h)
 {
     hosts = h ;
 }

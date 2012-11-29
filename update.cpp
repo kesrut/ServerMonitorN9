@@ -7,11 +7,12 @@ void update::getServers(QList <Host*> *h)
     for (i=0; i < tmp_hosts->count(); i++)
     {
         Host *host = tmp_hosts->at(i) ;
-        UpdateElement *element = new UpdateElement(this, i, *tmp_hosts) ;
+        UpdateElement *element = new UpdateElement(this, i, tmp_hosts) ;
         UpdateElement *elm = (UpdateElement*)host->getUpdateElement() ;
         if (elm != NULL)
         {
             UpdateElement *e = (UpdateElement*) host->getUpdateElement() ;
+            e->stopThread();
             delete e ;
         }
         host->setUpdateElement(element);
@@ -21,11 +22,12 @@ void update::getServers(QList <Host*> *h)
 void update::start(int i)
 {
     Host *host = hosts->at(i) ;
-    UpdateElement *element = new UpdateElement(this, i, *hosts) ;
+    UpdateElement *element = new UpdateElement(this, i, hosts) ;
     UpdateElement *elm = (UpdateElement*)host->getUpdateElement() ;
     if (elm != NULL)
     {
         UpdateElement *e = (UpdateElement*) host->getUpdateElement() ;
+        e->stopThread();
         delete e ;
     }
     host->setUpdateElement(element);
