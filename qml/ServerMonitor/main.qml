@@ -3,6 +3,10 @@ import com.nokia.meego 1.0
 
 PageStackWindow {
     id: appWindow
+    Component.onCompleted:
+    {
+        theme.inverted = true;
+    }
     property string fingerprintmessage;
     property variant indicator1
     property variant clear
@@ -113,7 +117,7 @@ PageStackWindow {
         }
         ToolIcon
         {
-            platformIconId: "icon-m-toolbar-add"
+            platformIconId: "toolbar-add"
             anchors.left: (parent === undefined) ? undefined : parent.left
             onClicked:
             {

@@ -3,6 +3,7 @@ import com.nokia.meego 1.0
 
 Page
 {
+    property string svr_txt
     property int index
     id: detailsPage
     width: parent.width
@@ -22,13 +23,14 @@ Page
         avg1 = "N/A"
         avg2 = "N/A"
         avg3 = "N/A"
+        svr_txt = "Server"
     }
     ToolBarLayout
     {
         id: commonTools
         ToolIcon
         {
-            iconId: "icon-m-toolbar-back"
+            iconId: "toolbar-back"
             onClicked:
             {
                 appWindow.pageStack.pop()
@@ -43,6 +45,7 @@ Page
         avg1 = server.getAvg1(index)
         avg2 = server.getAvg2(index)
         avg3 = server.getAvg3(index)
+        svr_txt = server.getServerTitle(index)
     }
     Connections
     {
@@ -55,6 +58,7 @@ Page
             avg1 = server.getAvg1(index)
             avg2 = server.getAvg2(index)
             avg3 = server.getAvg3(index)
+            svr_txt = server.getServerTitle(index)
         }
     }
     Flickable
@@ -63,15 +67,27 @@ Page
         anchors.fill: parent
         contentHeight: 420
         contentWidth: parent.width
+        Item {
+            anchors.top: parent.top
+            anchors.topMargin: 10
+            id: server_title_label
+            width: parent.width
+            height: 60
+            Text {
+                id: server_title
+                text: svr_txt
+                color: "white"
+                font.pixelSize: 30
+                font.bold: true
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
     Item
     {
-        anchors.top: parent.top
-        anchors.topMargin: 10
+        anchors.top: server_title_label.bottom
         id: item1
         width: parent.width
         height: 55
-        Column
-        {
             Text
             {
                 anchors.left: parent.left
@@ -79,17 +95,17 @@ Page
                 text: "Uptime"
                 font.pixelSize: 30
                 font.bold: true
-                color: "gray"
+                color: "white"
             }
             Text
             {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 10
                 text: uptime
-                font.pixelSize: 25
-                color: "black"
+                font.pixelSize: 30
+                font.bold: true
+                color: "white"
             }
-        }
     }
     Item {
         anchors.top: item1.bottom
@@ -97,8 +113,7 @@ Page
         id: item2
         width: parent.width
         height: 55
-        Column
-        {
+
             Text
             {
                 anchors.left: parent.left
@@ -106,17 +121,17 @@ Page
                 text: "Memory total"
                 font.pixelSize: 30
                 font.bold: true
-                color: "gray"
+                color: "white"
             }
             Text
             {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 10
                 text: memtotal
-                font.pixelSize: 25
-                color: "black"
+                font.pixelSize: 30
+                color: "white"
+                font.bold: true
             }
-        }
     }
     Item
     {
@@ -125,8 +140,6 @@ Page
         id: item3
         width: parent.width
         height: 55
-        Column
-        {
             Text
             {
                 anchors.left: parent.left
@@ -134,17 +147,17 @@ Page
                 text: "Memory free"
                 font.pixelSize: 30
                 font.bold: true
-                color: "gray"
+                color: "white"
             }
         Text
         {
-            anchors.left: parent.left
-            anchors.leftMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 10
             text: memfree
-            font.pixelSize: 25
-            color: "black"
+            font.pixelSize: 30
+            font.bold: true
+            color: "white"
             }
-        }
     }
     Item
     {
@@ -153,8 +166,6 @@ Page
         id: item4
         width: parent.width
         height: 55
-        Column
-        {
             Text
             {
                 anchors.left: parent.left
@@ -162,17 +173,17 @@ Page
                 text: "Load 1 Min."
                 font.pixelSize: 30
                 font.bold: true
-                color: "gray"
+                color: "white"
             }
             Text
             {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 10
                 text: avg1
-                font.pixelSize: 25
-                color: "black"
+                font.pixelSize: 30
+                font.bold: true
+                color: "white"
             }
-        }
     }
     Item
     {
@@ -181,8 +192,6 @@ Page
         id: item5
         width: parent.width
         height: 55
-        Column
-        {
             Text
             {
                 anchors.left: parent.left
@@ -190,17 +199,17 @@ Page
                 text: "Load 5 Min."
                 font.pixelSize: 30
                 font.bold: true
-                color: "gray"
+                color: "white"
             }
             Text
             {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 10
                 text: avg2
-                font.pixelSize: 25
-                color: "black"
+                font.pixelSize: 30
+                font.bold: true
+                color: "white"
             }
-        }
     }
     Item
     {
@@ -209,8 +218,6 @@ Page
         id: item6
         width: parent.width
         height: 55
-        Column
-        {
             Text
             {
                 anchors.left: parent.left
@@ -218,17 +225,17 @@ Page
                 text: "Load 15 Min."
                 font.pixelSize: 30
                 font.bold: true
-                color: "gray"
+                color: "white"
             }
             Text
             {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 10
                 text: avg3
-                font.pixelSize: 25
-                color: "black"
+                font.pixelSize: 30
+                font.bold: true
+                color: "white"
             }
-        }
-    }
+       }
     }
 }

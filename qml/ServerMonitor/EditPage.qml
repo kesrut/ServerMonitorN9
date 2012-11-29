@@ -42,7 +42,7 @@ Page
         visible: true
         ToolIcon
         {
-            iconId: "icon-m-toolbar-back"
+            iconId: "toolbar-back"
             onClicked:
             {
                 indicator1.visible = false
@@ -52,7 +52,7 @@ Page
         }
         ToolIcon
         {
-            iconId: "icon-m-toolbar-done"
+            iconId: "toolbar-done"
             onClicked:
             {
                 error = false

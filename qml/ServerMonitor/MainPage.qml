@@ -118,6 +118,7 @@ Page {
                     text: name
                     anchors.left: parent.left
                     anchors.leftMargin: 30
+                    color: "white"
                 }
                 Text
                 {
@@ -125,6 +126,7 @@ Page {
                     text: status
                     anchors.left: parent.left
                     anchors.leftMargin: 30
+                    color: "white"
                 }
             }
         }

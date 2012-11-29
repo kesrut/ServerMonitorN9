@@ -132,7 +132,7 @@ void ServerListModel::insert(QString title, QString hostname, QString username, 
 
 QString ServerListModel::getServerTitle(qint32 index)
  {
-    if (count() > 0)
+    if (servers->count() > 0)
     return servers->at(index)->title() ;
     else return "" ;
  }
