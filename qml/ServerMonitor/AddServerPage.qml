@@ -92,6 +92,7 @@ Page
                     indicator1.visible = true
                     indicator1.running = true
                     socket.AcceptHost(textfield1.text, textfield2.text, textfield3.text, textfield4.text, textfield5.text)
+                    //server.insert(textfield1.text, textfield2.text, textfield3.text, textfield4.text, textfield5.text)
                     appWindow.indicator1 = indicator1
                 }
             }

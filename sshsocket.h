@@ -28,12 +28,24 @@
 #include "aegis_crypto.h"
 #endif
 #endif
+#include "serverlistmodel.h"
+
+class ServerListModel ;
 
 class sshsocket : public QObject
 {
     Q_OBJECT
 public:
     explicit sshsocket(QObject *parent = 0) ;
+    void setServers(QList <Host*> *servers)
+    {
+        this->servers = servers ;
+    }
+    void setModel(ServerListModel *model)
+    {
+        this->model = model ;
+    }
+    Q_INVOKABLE void edit() ;
     Q_INVOKABLE void AcceptHost(QString title, QString hostname, QString username, QString password, qint32 port ) ;
     Q_INVOKABLE void EditHost(QString title, QString hostname, QString username, QString password, qint32 port ) ;
     Q_INVOKABLE QString connectErrorMessage() ;
@@ -43,6 +55,7 @@ public:
     Q_INVOKABLE void setMode(int mode) ;
     Q_INVOKABLE void setIndex(qint32 index) ;
     Q_INVOKABLE int getIndex() ;
+    Q_INVOKABLE void insert() ;
 private slots:
     void socket_connected_slot() ;
     void display_error(QAbstractSocket::SocketError socketError) ;
@@ -69,6 +82,8 @@ private:
     int type;
     int mode ;
     int index ;
+    QList <Host*> *servers;
+    ServerListModel *model ;
 };
 
 #endif // SSHSOCKET_H

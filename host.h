@@ -15,16 +15,17 @@ public:
     Host(const Host&, QObject *parent = 0) {}
     Host(const QString &title, const QString &hostname, const QString &username, qint32 port)
     {
-        _title = title ;
-        _hostname = hostname ;
-        _username = username ;
+        _title = QString(title);
+        _hostname = QString(hostname) ;
+        _username = QString(username) ;
         _port = port ;
         element = NULL ;
+        _timer = NULL ;
         thread = NULL ;
     }
     void setPasswordId(qint32 id) { _password_id = id ; }
     qint32 password_id() const { return _password_id ; }
-    void setTitle(const QString &title) { _title = title ; }
+    void setTitle(const QString &title) { _title = QString(title) ; }
     QString title() const { return _title ; }
     void setHostName(const QString &hostname) { _hostname = hostname ; }
     QString hostname() const { return _hostname ; }

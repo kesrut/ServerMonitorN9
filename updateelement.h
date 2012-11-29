@@ -14,10 +14,10 @@ class UpdateElement : public QObject
     Q_OBJECT
 public:
 
-    UpdateElement(QObject *parent, int v, QList <Host*> h) : QObject(parent)
+    UpdateElement(QObject *parent, int v, QList <Host*> &hvalue) : QObject(parent)
     {
         index = v ;
-        hosts = h ;
+        hosts = hvalue ;
         connect(this, SIGNAL(update_info()), parent, SLOT(update_info())) ;
     }
     void start(Host *host) ;

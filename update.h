@@ -17,9 +17,9 @@ public:
     update (QObject *parent = 0 ) : QObject(parent)
     {
     }
-    void getServers(QList <Host*> &h) ;
+    void getServers(QList <Host*> *h) ;
     void getModel(ServerListModel *m) ;
-    void setServes(QList <Host*> &h)
+    void setServers(QList <Host*> *h)
     {
         hosts = h ;
     }
@@ -29,7 +29,7 @@ private slots:
 signals:
     void update_tbl() ;
 private:
-    QList <Host*> hosts ;
+    QList <Host*> *hosts ;
     ServerListModel *model ;
 };
 

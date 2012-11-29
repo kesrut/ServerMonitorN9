@@ -20,7 +20,7 @@ PageStackWindow {
             indicator1.visible = false
             indicator1.running = false
             socket.writeKnowHost()
-            var index_value = server.insertHost(socket.getHost())
+            socket.insert() ;
             appWindow.pageStack.pop() ;
         }
         onRejected:
@@ -41,7 +41,7 @@ PageStackWindow {
             indicator1.visible = false
             indicator1.running = false
             socket.writeKnowHost()
-            var index_value = server.editHost(socket.getHost(), socket.getIndex())
+            socket.edit()
             appWindow.pageStack.pop() ;
         }
         onRejected:
@@ -79,7 +79,7 @@ PageStackWindow {
             addServerPage.clear()
             indicator1.visible = false
             indicator1.running = false
-            server.insertHost(socket.getHost())
+            socket.insert()
             appWindow.pageStack.pop() ;
         }
         onAccept_fingerprint_edit:
@@ -93,7 +93,7 @@ PageStackWindow {
         {
             indicator1.visible = false
             indicator1.running = false
-            server.editHost(socket.getHost(), socket.getIndex())
+            socket.edit()
             appWindow.pageStack.pop() ;
         }
     }

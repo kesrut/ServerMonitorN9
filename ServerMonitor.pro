@@ -15,7 +15,7 @@ INCLUDEPATH += .
 unix:!isEmpty(MEEGO_VERSION_MAJOR)
 {
     LIBS += -L"$$_PRO_FILE_PWD_/arm/" -lssh2 -lcrypto -lz -laegis_crypto # -lcrypto -lz
-    LIBS += -L /Users/kesrut/QtSDK/Madde/sysroots/harmattan_sysroot_10.2011.34-1_slim/usr/lib/ -lcrypto -lz
+    #LIBS += -L /Users/kesrut/QtSDK/Madde/sysroots/harmattan_sysroot_10.2011.34-1_slim/usr/lib/ -lcrypto -lz
 }
 
 SOURCES += main.cpp \

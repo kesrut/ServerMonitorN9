@@ -1,13 +1,13 @@
 #include "update.h"
 
-void update::getServers(QList <Host*> &h)
+void update::getServers(QList <Host*> *h)
 {
-    hosts = h ;
+    QList <Host*> *tmp_hosts = h ;
     int i=0;
-    for (i=0; i < hosts.count(); i++)
+    for (i=0; i < tmp_hosts->count(); i++)
     {
-        Host *host = hosts.at(i) ;
-        UpdateElement *element = new UpdateElement(this, i, hosts) ;
+        Host *host = tmp_hosts->at(i) ;
+        UpdateElement *element = new UpdateElement(this, i, *tmp_hosts) ;
         UpdateElement *elm = (UpdateElement*)host->getUpdateElement() ;
         if (elm != NULL)
         {
@@ -20,8 +20,8 @@ void update::getServers(QList <Host*> &h)
 }
 void update::start(int i)
 {
-    Host *host = hosts.at(i) ;
-    UpdateElement *element = new UpdateElement(this, i, hosts) ;
+    Host *host = hosts->at(i) ;
+    UpdateElement *element = new UpdateElement(this, i, *hosts) ;
     UpdateElement *elm = (UpdateElement*)host->getUpdateElement() ;
     if (elm != NULL)
     {

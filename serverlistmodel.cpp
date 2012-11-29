@@ -1,15 +1,56 @@
 #include "serverlistmodel.h"
 #include <QDebug>
 
+ServerListModel::ServerListModel()
+{
+    servers = new QList<Host*>;
+    QHash<int, QByteArray> roles;
+    roles[NameRole] = "name";
+    roles[MessageRole] = "status" ;
+    roles[ErrorRole] = "error" ;
+    setRoleNames(roles);
+    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "servers.db") ;
+    file.open(QFile::ReadOnly) ;
+    QDataStream stream(&file) ;
+    stream.setVersion(QDataStream::Qt_4_7);
+    int count = 0, i=0 ;
+    stream >> count ;
+    for (i=0; i < count; i++)
+    {
+        QString title ;
+        QString hostname ;
+        QString username ;
+        qint32 port ;
+        qint32 password_id ;
+        QString password ;
+        QByteArray data ;
+#ifdef Q_WS_SIMULATOR
+        stream >> title >> hostname >> username >> port >> password ;
+#else
+        stream >> title >> hostname >> username >> port >> data ;
+#endif
+        Host *host ;
+        host = new Host(title, hostname, username, port);
+#ifdef Q_WS_SIMULATOR
+        host->setPassword(password) ;
+#else
+        host->setSecret(data);
+#endif
+        servers->append(host);
+    }
+    file.close();
+
+    emit countChanged();
+}
 
 int ServerListModel::rowCount(const QModelIndex & parent) const {
      return count();
  }
 
  QVariant ServerListModel::data(const QModelIndex & index, int role) const {
-     if (index.row() < 0 || index.row() > servers.count())
+     if (index.row() < 0 || index.row() > servers->count())
          return QVariant() ;
-     Host *host = servers[index.row()];
+     Host *host = (*servers)[index.row()];
      if (role == NameRole)
      {
          return host->title() ;
@@ -30,40 +71,20 @@ QObject* ServerListModel::getModel()
     return this ;
  }
 
-int ServerListModel::editHost(QObject *obj, qint32 index)
+void ServerListModel::new_updt(int index)
 {
-    Host *host = (Host*)obj ;
-    QTimer *timer = servers.at(index)->getTimer() ;
-    if (timer != NULL)
-    {
-        if (timer->isActive())
-        {
-            timer->stop() ;
-            delete timer ;
-        }
-    }
-    QThread *thread = (QThread*)host->getThread() ;
-    if (thread != NULL)
-    {
-        if (thread->isRunning())
-        {
-            thread->exit();
-        }
-    }
-    servers.replace(index, host);
-    updt->setServes(servers);
+    updt->setServers(servers);
     updt->start(index);
     emit countChanged();
     save() ;
-    return index ;
 }
 
 void ServerListModel::refresh()
 {
     int i=0 ;
-    for (i=0; i < servers.count(); i++)
+    for (i=0; i < servers->count(); i++)
     {
-        QTimer *timer = servers.at(i)->getTimer() ;
+        QTimer *timer = servers->at(i)->getTimer() ;
         if (timer != NULL)
         {
             if (timer->isActive())
@@ -72,8 +93,7 @@ void ServerListModel::refresh()
                 delete timer ;
             }
         }
-        Host *h = servers.at(i) ;
-        QThread *thread = (QThread*)h->getThread() ;
+        QThread *thread = (QThread*)servers->at(i)->getThread() ;
         if (thread != NULL)
         {
             if (thread->isRunning())
@@ -81,32 +101,30 @@ void ServerListModel::refresh()
                 thread->exit();
             }
         }
-        updt->setServes(servers);
+        updt->setServers(servers);
         updt->start(i);
     }
 }
 
-int ServerListModel::insertHost(QObject *obj)
+int ServerListModel::insertHost(Host *obj)
 {
-    Host *host = (Host*)obj ;
-    beginInsertRows(QModelIndex(), servers.count(), servers.count());
-    servers.append(host);
+    beginInsertRows(QModelIndex(), servers->count(), servers->count());
+    servers->append(obj);
     save() ;
     endInsertRows();
     //delete host ;
-    int k = (servers.count() - 1) ;
-    updt->setServes(servers);
+    int k = (servers->count() - 1) ;
+    updt->setServers(servers);
     updt->start(k);
     emit countChanged();
-
-    return (servers.count() - 1) ;
+    return (servers->count() - 1) ;
 }
 
 void ServerListModel::insert(QString title, QString hostname, QString username, QString password, qint32 port )
  {
      Host *host = new Host(title, hostname, username, port) ;
-     beginInsertRows(QModelIndex(), servers.count(), servers.count());
-     servers.append(host);
+     beginInsertRows(QModelIndex(), servers->count(), servers->count());
+     servers->append(host);
      endInsertRows();
      save() ;
      emit countChanged();
@@ -115,28 +133,28 @@ void ServerListModel::insert(QString title, QString hostname, QString username, 
 QString ServerListModel::getServerTitle(qint32 index)
  {
     if (count() > 0)
-    return servers.at(index)->title() ;
+    return servers->at(index)->title() ;
     else return "" ;
  }
 
 QString ServerListModel::getHostname(qint32 index)
 {
     if (count() > 0)
-    return servers.at(index)->hostname() ;
+    return servers->at(index)->hostname() ;
     else return "" ;
 }
 
 QString ServerListModel::getUsername(qint32 index)
 {
     if (count() > 0)
-    return servers.at(index)->username() ;
+    return servers->at(index)->username() ;
     else return "" ;
 }
 
 QString ServerListModel::getPort(qint32 index)
 {
     if (count() > 0)
-    return QString::number(servers.at(index)->port()) ;
+    return QString::number(servers->at(index)->port()) ;
     else return "" ;
 }
 
@@ -144,15 +162,15 @@ QString ServerListModel::getPassword(qint32 index)
 {
 #ifdef Q_WS_SIMULATOR
         QString password ;
-        password = servers.at(index)->password() ;
+        password = servers->at(index)->password() ;
 #else
         RAWDATA_PTR clearData;
         size_t length = 0;
         QByteArray secret;
-        secret.append(servers.at(index)->getSecret());
+        secret.append(servers->at(index)->getSecret());
         aegis_crypto_decrypt(secret.data(), secret.length(), NULL, &clearData, &length) ;
         QByteArray decrypted((char *)clearData, length);
-        aegis_crypto_free(clearData);
+        //aegis_crypto_free(clearData);
         QString password(decrypted) ;
 #endif
         if (count() > 0)
@@ -162,8 +180,8 @@ QString ServerListModel::getPassword(qint32 index)
 
  void ServerListModel::credentialsStored(const quint32 id)
  {
-    int i = servers.count() - 1 ;
-    servers.at(i)->setPasswordId(id);
+    int i = servers->count() - 1 ;
+    servers->at(i)->setPasswordId(id);
     save();
  }
 
@@ -179,7 +197,7 @@ QString ServerListModel::getPassword(qint32 index)
     while (!libssh2_knownhost_get(nh, &kh, kh2))
     {
         kh2 = kh ;
-        if (strcmp(kh2->name, servers.at(index)->hostname().toAscii()) == 0)
+        if (strcmp(kh2->name, servers->at(index)->hostname().toAscii()) == 0)
         {
             libssh2_knownhost_del(nh, kh2) ;
             break ;
@@ -187,7 +205,7 @@ QString ServerListModel::getPassword(qint32 index)
     }
     libssh2_knownhost_writefile(nh, known_host_dir.toAscii(),LIBSSH2_KNOWNHOST_FILE_OPENSSH) ;
     libssh2_knownhost_free(nh) ;
-    QTimer *timer = servers.at(index)->getTimer() ;
+    QTimer *timer = servers->at(index)->getTimer() ;
     if (timer != NULL)
     {
         if (timer->isActive())
@@ -198,12 +216,12 @@ QString ServerListModel::getPassword(qint32 index)
     }
 #ifdef Q_WS_SIMULATOR
      beginRemoveRows(QModelIndex(), index, index);
-     servers.removeAt(index) ;
+     servers->removeAt(index) ;
      endRemoveRows();
      save() ;
 #else
     beginRemoveRows(QModelIndex(), index, index);
-    Host *h = servers.at(index) ;
+    Host *h = servers->at(index) ;
     QThread *thread = (QThread*)h->getThread() ;
     if (thread != NULL)
     {
@@ -213,7 +231,7 @@ QString ServerListModel::getPassword(qint32 index)
         }
     }
     delete h ;
-    servers.removeAt(index) ;
+    servers->removeAt(index) ;
     endRemoveRows();
     save() ;
 #endif
@@ -226,10 +244,10 @@ void ServerListModel::save()
      QDataStream stream(&file) ;
      stream.setVersion(QDataStream::Qt_4_7);
      int i=0 ;
-     stream << servers.count() ;
-     for (i=0; i < servers.count(); i++)
+     stream << servers->count() ;
+     for (i=0; i < servers->count(); i++)
      {
-        Host *host = servers.at(i) ;
+        Host *host = servers->at(i) ;
 #ifdef Q_WS_SIMULATOR
         stream << host->title() << host->hostname() << host->username() << host->port() << host->password() ;
 #else
@@ -239,7 +257,7 @@ void ServerListModel::save()
      file.close();
 }
 
-QList<Host*> & ServerListModel::getServers()
+QList<Host*> *ServerListModel::getServers()
 {
     return servers;
 }
@@ -251,7 +269,7 @@ void ServerListModel::update_table()
 
 QString ServerListModel::getUptime(int index)
 {
-   Host *host = servers.at(index) ;
+   Host *host = servers->at(index) ;
    long value = host->getUptime() ;
    if (host->isError())
    {
@@ -286,7 +304,7 @@ QString ServerListModel::getUptime(int index)
 
 QString ServerListModel::getMemTotal(int index)
 {
-    Host *host = servers.at(index) ;
+    Host *host = servers->at(index) ;
     long value = host->getMemTotal() ;
     if (host->isError())
     {
@@ -319,7 +337,7 @@ QString ServerListModel::getMemTotal(int index)
 
 QString ServerListModel::getFreeMem(int index)
 {
-    Host *host = servers.at(index) ;
+    Host *host = servers->at(index) ;
     long value = host->getMemFree() ;
     if (host->isError())
     {
@@ -352,7 +370,7 @@ QString ServerListModel::getFreeMem(int index)
 
 QString ServerListModel::getAvg1(int index)
 {
-    Host *host = servers.at(index) ;
+    Host *host = servers->at(index) ;
     if (host->isError())
     {
         return "N/A" ;
@@ -366,7 +384,7 @@ QString ServerListModel::getAvg1(int index)
 
 QString ServerListModel::getAvg2(int index)
 {
-    Host *host = servers.at(index) ;
+    Host *host = servers->at(index) ;
     if (host->isError())
     {
         return "N/A" ;
@@ -380,7 +398,7 @@ QString ServerListModel::getAvg2(int index)
 
 QString ServerListModel::getAvg3(int index)
 {
-    Host *host = servers.at(index) ;
+    Host *host = servers->at(index) ;
     if (host->isError())
     {
         return "N/A" ;

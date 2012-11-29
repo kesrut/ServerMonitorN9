@@ -12,20 +12,6 @@ updatethread::updatethread(QObject *parent)
     QObject::connect(qobject_cast<QObject*>(this), SIGNAL(update()), parent, SLOT(updt())) ;
 }
 
-unsigned char *aes_decrypt(EVP_CIPHER_CTX *e, unsigned char *ciphertext, int *len)
-{
-  /* because we have padding ON, we must allocate an extra cipher block size of memory */
-  int p_len = *len, f_len = 0;
-  unsigned char *plaintext = (unsigned char*)malloc(p_len + AES_BLOCK_SIZE);
-
-  EVP_DecryptInit_ex(e, NULL, NULL, NULL, NULL);
-  EVP_DecryptUpdate(e, plaintext, &p_len, ciphertext, *len);
-  EVP_DecryptFinal_ex(e, plaintext+p_len, &f_len);
-
-  *len = p_len + f_len;
-  return plaintext;
-}
-
 static void kbd_callback(const char *name, int name_len,
                          const char *instruction, int instruction_len,
                          int num_prompts,
@@ -65,13 +51,11 @@ void updatethread::run()
         RAWDATA_PTR clearData;
         size_t length = 0;
         QByteArray secret;
-
         secret.append(host->getSecret()) ;
         aegis_crypto_decrypt(secret.data(), secret.length(), NULL, &clearData, &length) ;
         QByteArray decrypted((char *)clearData, length);
         QString password(decrypted) ;
-       // aegis_crypto_free(clearData);
-
+        aegis_crypto_free(clearData);
 #endif
         session = libssh2_session_init_ex(NULL, NULL, NULL, password.data());
         rc = libssh2_session_startup(session, sock) ;
@@ -82,7 +66,6 @@ void updatethread::run()
             emit update();
             socket->close();
             delete socket ;
-            deleteLater();
             return ;
         }
         else
@@ -125,7 +108,6 @@ void updatethread::run()
                       emit update();
                       socket->close();
                       delete socket ;
-                      deleteLater();
                       return ;
                    }
              }
@@ -138,7 +120,6 @@ void updatethread::run()
                    emit update();
                    socket->close();
                    delete socket ;
-                   deleteLater();
                    return ;
             }
             libssh2_knownhost_free(nh);
@@ -167,7 +148,6 @@ void updatethread::run()
                             emit update();
                             socket->close();
                             delete socket ;
-                            deleteLater();
                             return;
                         }
                     }
@@ -178,7 +158,6 @@ void updatethread::run()
 
                                                                  &kbd_callback)) )
                     {
-
                         host->setMessage("Authentication by password failed!");
                         host->setError(true);
                         libssh2_session_disconnect(session,"Disconnect!");
@@ -186,7 +165,6 @@ void updatethread::run()
                         emit update();
                         socket->close();
                         delete socket ;
-                        deleteLater();
                         return;
                     }
 
@@ -255,7 +233,6 @@ void updatethread::run()
             emit update();
             socket->close();
             delete socket ;
-            deleteLater();
         }
     }
     else
@@ -265,7 +242,6 @@ void updatethread::run()
         emit update();
         socket->close();
         delete socket ;
-        deleteLater();
     }
 }
 

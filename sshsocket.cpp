@@ -16,7 +16,6 @@ void sshsocket::socket_connected_slot()
    sock = socket->socketDescriptor() ;
    session = libssh2_session_init();
    libssh2_session_set_blocking(session, 0);
-   libssh2_session_set_blocking(session, 0);
    while ((rc = libssh2_session_startup(session, sock)) == LIBSSH2_ERROR_EAGAIN);
    if (rc)
    {
@@ -99,6 +98,36 @@ void sshsocket::socket_connected_slot()
       }
 }
 
+
+void sshsocket::insert()
+{
+    model->insertHost(host) ;
+}
+
+void sshsocket::edit()
+{
+    QTimer *timer = servers->at(index)->getTimer() ;
+    if (timer != NULL)
+    {
+        if (timer->isActive())
+        {
+            timer->stop() ;
+            delete timer ;
+        }
+    }
+
+    QThread *thread = (QThread*)host->getThread() ;
+    if (thread != NULL)
+    {
+        if (thread->isRunning())
+        {
+            thread->exit();
+        }
+    }
+    servers->replace(index, host);
+    model->new_updt(index);
+}
+
 void sshsocket::setIndex(qint32 index)
 {
     this->index = index ;
@@ -156,7 +185,7 @@ void sshsocket::AcceptHost(QString title, QString hostname, QString username, QS
      }
      QByteArray encrypted((char *)cipherData, cipherLength);
      host->setSecret(encrypted);
-     //aegis_crypto_free(cipherData);
+    // aegis_crypto_free(cipherData);
 #endif
     socket = new QTcpSocket(this) ;
     qint16 port_value = host->port() ;
@@ -183,4 +212,3 @@ QString sshsocket::connectErrorMessage()
 {
     return socket->errorString() ;
 }
-
